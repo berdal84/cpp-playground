@@ -48,7 +48,7 @@ struct agnostic_vector
     template<typename T, typename ...Args>
     T* emplace_back(Args... args)
     {
-        assert( ("Please call initialize_with<T>() before", type_id != std::type_index(typeid(void))));
+        assert( ("Please call init_for<T>() before", type_id != std::type_index(typeid(void))));
         assert(("Type should match!", type_id == std::type_index(typeid(T))));
 
         // Ensure size is sufficient
@@ -69,7 +69,7 @@ struct agnostic_vector
     }
 
     template<class T>
-    void initialize_with()
+    void init_for()
     {
         // Store the type index, to ensure it is the same when doing a placement-new (cf: emplace_back)
         assert( ("cannot call initialize_for more than once!", type_id == std::type_index(typeid(void))));
@@ -120,7 +120,7 @@ int main() {
     // Construct a vector
     size_t desired_initial_capacity  = 2;
     agnostic_vector<element_size> vec{desired_initial_capacity};
-    vec.initialize_with<TheComponentIWant>(); // <------------------- this call is templated, not the class.
+    vec.init_for<TheComponentIWant>(); // <------------------- this call is templated by a type, not the class.
                                               //                      It can be done after instantiation.
                                               //                      At this step the vector allows to construct
                                               //                      new elements, because a destructor is generated as
@@ -133,7 +133,7 @@ int main() {
 
     printf("\nEmplace at index 0 ...\n\n");
 
-    auto* component = vec.emplace_back<TheComponentIWant>(1984); // <---- this call is templated, not the class.
+    auto* component = vec.emplace_back<TheComponentIWant>(1984); // <---- this call is templated by a type, not the class.
                                                               //       If we decided to use an empty constructor,
                                                               //       or a constructor with a known-in-advance set
                                                               //       of arguments, we could wrap it in a lambda.
