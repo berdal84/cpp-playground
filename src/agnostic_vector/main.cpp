@@ -18,18 +18,18 @@ int main() {
         TEST("size", vec.size() == 0);
         TEST("buffer_size_in_bytes", vec.buffer_size_in_bytes() == 0);
 
-        printf("\nemplace_back<Component>(int) component1 ...\n\n");
+        printf("\nvec.emplace_back<Component>(int) component1 ...\n\n");
 
         auto *component1 = vec.emplace_back<Component>(42);
         TEST("Component's value", component1->value == 42);
         TEST("Component's value", component1->deleted == false);
         TEST("size", vec.size() == 1);
 
-        printf("\nemplace_back(), cast and assign value ...\n\n");
+        printf("\nvec.emplace_back(), cast and assign value ...\n\n");
         auto c = (Component*)vec.emplace_back(); // <----------- this uses internally the default_constructor lambda
         c->value = 2023;
 
-        printf("\nget_at<TheComponentIWant>() ...\n\n");
+        printf("\nvec.at<Component>() ...\n\n");
         auto component2 = vec.at<Component>(1);
         TEST("Component's value", component2->value == 2023);
 
