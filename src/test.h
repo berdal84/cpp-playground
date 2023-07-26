@@ -5,7 +5,7 @@ static size_t test_ok_count = 0;
 static size_t test_failed_count = 0;
 
 #define TEST(name, expression) \
-    printf("Test n°%zu: %-20s : ", test_count, name ); \
+    printf("Test n°%zu: %-20s : ", test_count+1, name ); \
     if ( expression ) { \
         printf("%s", "OK :)\n"); \
         ++test_ok_count; \
