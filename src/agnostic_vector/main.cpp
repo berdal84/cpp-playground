@@ -4,6 +4,8 @@
 
 int main() {
     constexpr auto element_size = sizeof(Component);
+
+    TEST("instance_count is zero", Component::instance_count() == 0);
     {
         // Construct a vector
         size_t desired_initial_capacity = 2;
