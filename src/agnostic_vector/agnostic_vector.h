@@ -6,19 +6,24 @@
 #include <cassert>
 
 /**
- * A vector to allocate chunks of memory without knowing its type
+ * The goal of this experimental vector is to be able to initialize an agnostic vector (allocating some BlockT)
+ * and then be able to construct a given class inplace.
+ *
+ * It requires to be initialized using init_for<T>()
+ * This will create a default constructor/destructor as lambda.
+ * Those lambdas will be used to initialize or destroy elements when doing basic operations (erase, insert, etc...)
  */
 template<size_t ELEMENT_SIZE_IN_BYTES = sizeof(char)>
 struct agnostic_vector
 {
     // data
-    struct BlockT {
+    struct BlockT { // A struct having a given size
         char dummy[ELEMENT_SIZE_IN_BYTES]; // trivially copyable
     };
-    std::vector<BlockT>        buffer;
-    std::type_index            type_id;
+    std::vector<BlockT>         buffer;
+    std::type_index             type_id;
     std::function<void*(void*)> default_constructor;
-    std::function<void(void*)> destructor;
+    std::function<void(void*)>  destructor;
 
     // code
     explicit agnostic_vector(size_t capacity = 0)
@@ -32,14 +37,16 @@ struct agnostic_vector
 
     ~agnostic_vector()
     {
+        clear();
+    }
+
+    void clear()
+    {
         for(auto& each : buffer)
         {
             destructor(&each.dummy);
         }
     }
-
-    void clear()
-    { buffer.clear(); }
 
     size_t size() const
     { return buffer.size(); }
