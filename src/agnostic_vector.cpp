@@ -78,7 +78,7 @@ struct agnostic_vector
         // Store a destructor
         destructor = [](void* ptr) {
             auto* instance = (T*)(ptr);
-            instance->~Component();
+            instance->~T();
         };
     }
 };
