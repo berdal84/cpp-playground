@@ -1,5 +1,5 @@
 #include "test_macros.h"
-#include "agnostic_vector.h"
+#include "AgnosticVector.h"
 #include "NumberComponent.h"
 
 int main() {
@@ -7,13 +7,19 @@ int main() {
 
     TEST("instance_count is zero", SimpleComponent::instance_count() == 0);
     {
-        // Construct a vector
-        size_t desired_initial_capacity = 2;
-        agnostic_vector vec{element_size, desired_initial_capacity};
-        vec.init_for<SimpleComponent>();
+        // Construct a vector (no template required, but vector cannot be used until we call init_for<T>() )
+        AgnosticVector vec;
+
+        // Initialize for a given type
+        //
+        // It will:
+        // - create default constructor and destructor lambdas
+        // - store sizeof(SimpleComponent)
+        size_t init_capacity = 0;
+        vec.init_for<SimpleComponent>(init_capacity);
 
         TEST("capacity", vec.buffer.capacity() == element_size * vec.capacity());
-        TEST("capacity", vec.capacity() == desired_initial_capacity);
+        TEST("capacity", vec.capacity() == init_capacity);
         TEST("size", vec.size() == 0);
         TEST("buffer_size", vec.buffer_size() == 0);
 

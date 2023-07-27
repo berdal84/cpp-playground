@@ -13,7 +13,7 @@
  * This will create a default constructor/destructor as lambda.
  * Those lambdas will be used to initialize or destroy elements when doing basic operations (erase, insert, etc...)
  */
-struct agnostic_vector
+struct AgnosticVector
 {
     using ChunkT = char;
     static_assert(sizeof(ChunkT) == 1, "size of ChunkT should be 1");
@@ -27,12 +27,12 @@ struct agnostic_vector
     std::function<void(void*)>  destructor;
 
     // code
-    explicit agnostic_vector(size_t _elem_size_in_chunk, size_t _capacity = 0)
+    explicit AgnosticVector()
         : type_id( std::type_index(typeid(void)) )
-        , elem_size_in_byte(_elem_size_in_chunk)
-    { if( _capacity > 0 ) reserve(_capacity); }
+        , elem_size_in_byte(0)
+    {}
 
-    ~agnostic_vector()
+    ~AgnosticVector()
     { clear(); }
 
     void clear()
@@ -133,6 +133,7 @@ struct agnostic_vector
     // default constructor and destructor are defined by default, user can override them.
     template<typename T>
     void init_for(
+            size_t _capacity = 0,
             std::function<void*(void*)>&& _default_constructor = [](void* ptr) {
                 return new (ptr) T();
             },
@@ -141,12 +142,17 @@ struct agnostic_vector
                 instance->~T();
             })
     {
-        assert(sizeof(T) == elem_size_in_byte);
+        elem_size_in_byte = sizeof(T);
         // Store the type index, to ensure it is the same when doing a placement-new (cf: emplace_back)
         assert(type_id == std::type_index(typeid(void)));
         type_id = std::type_index(typeid(T));
         default_constructor = _default_constructor;
         destructor          = _destructor;
+
+        if (_capacity > 0 )
+        {
+            reserve(_capacity);
+        }
     }
 
     // Get an element at a given index, uses C style cast.

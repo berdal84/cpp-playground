@@ -7,4 +7,4 @@ Can be built on other platforms.
 
 Build: ` mkdir -p build && cmake . -B build && cd build && cmake --build .`
 
-Run: `./agnostic_vector`
+Run: `./AgnosticVector`
