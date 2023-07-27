@@ -4,8 +4,6 @@
 #include "ComponentManager.h"
 
 int main() {
-    constexpr auto element_size = sizeof(SimpleComponent);
-
     TEST("instance_count is zero", SimpleComponent::instance_count() == 0);
     {
         // Construct a vector
@@ -20,7 +18,7 @@ int main() {
         size_t init_capacity = 0;
         vec.init_for<SimpleComponent>(init_capacity);
 
-        TEST("capacity", vec.buffer.capacity() == element_size * vec.capacity());
+        TEST("capacity", vec.buffer.capacity() == sizeof(SimpleComponent) * vec.capacity());
         TEST("capacity", vec.capacity() == init_capacity);
         TEST("size", vec.size() == 0);
         TEST("buffer_size", vec.buffer_size() == 0);
