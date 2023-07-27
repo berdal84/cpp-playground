@@ -17,21 +17,21 @@ int main() {
         TEST("size", vec.size() == 0);
         TEST("buffer_size", vec.buffer_size() == 0);
 
-        printf("\nvec.emplace_back<Component>(int) component1 ...\n\n");
+        printf("\nvec.emplace_back<SimpleComponent>(int) component1 ...\n\n");
 
         auto *component1 = vec.emplace_back<SimpleComponent>(42);
-        TEST("Component's value", component1->value() == 42);
-        TEST("Component's value", component1->uid != 0); // non null
+        TEST("component1's value", component1->value() == 42);
+        TEST("component1's value", component1->uid != 0); // non null
         TEST("size", vec.size() == 1);
-        TEST("instance_count is zero", Component::instance_count() == 1);
+        TEST("instance_count is zero", SimpleComponent::instance_count() == 1);
 
-        printf("\nvec.emplace_back(), cast and assign value ...\n\n");
+        printf("\nvec.emplace_back(), cast and assign value to 2023...\n\n");
         auto c = (SimpleComponent*)vec.emplace_back(); // <----------- this uses internally the default_constructor lambda
         c->value() = 2023;
 
-        printf("\nvec.at<Component>() ...\n\n");
+        printf("\nvec.at<SimpleComponent>() ...\n\n");
         auto component2 = vec.at<SimpleComponent>(1);
-        TEST("Component's value", component2->value() == 2023);
+        TEST("component2's value", component2->value() == 2023);
         TEST("size", vec.size() == 2);
 
         printf("\nErase at index 0 ...\n\n");
