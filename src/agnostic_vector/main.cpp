@@ -10,8 +10,7 @@ int main() {
         // Construct a vector
         size_t desired_initial_capacity = 2;
         agnostic_vector<element_size> vec{desired_initial_capacity};
-        auto default_constructor = [](void *ptr) -> void* { return new(ptr) Component(0); };
-        vec.init_for<Component>(default_constructor);
+        vec.init_for<Component>();
 
         TEST("capacity", vec.buffer.capacity() == vec.capacity());
         TEST("capacity", vec.capacity() == desired_initial_capacity);
@@ -21,17 +20,17 @@ int main() {
         printf("\nvec.emplace_back<Component>(int) component1 ...\n\n");
 
         auto *component1 = vec.emplace_back<Component>(42);
-        TEST("Component's value", component1->value == 42);
-        TEST("Component's value", component1->deleted == false);
+        TEST("Component's value", component1->value() == 42);
+        TEST("Component's value", component1->is_null() == false);
         TEST("size", vec.size() == 1);
 
         printf("\nvec.emplace_back(), cast and assign value ...\n\n");
         auto c = (Component*)vec.emplace_back(); // <----------- this uses internally the default_constructor lambda
-        c->value = 2023;
+        c->value() = 2023;
 
         printf("\nvec.at<Component>() ...\n\n");
         auto component2 = vec.at<Component>(1);
-        TEST("Component's value", component2->value == 2023);
+        TEST("Component's value", component2->value() == 2023);
 
         TEST("size", vec.size() == 2);
 

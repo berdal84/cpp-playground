@@ -68,18 +68,18 @@ struct agnostic_vector
     { return buffer.size() * ELEMENT_SIZE_IN_BYTES;}
 
     template<typename T, typename ...Args>
-    T* emplace_back(Args ... args)
+    T* emplace_back(Args... args)
     {
         static_assert(sizeof(T) == ELEMENT_SIZE_IN_BYTES, "T has not the right size");
-        assert( ("Please call init_for<T>() before", type_id != std::type_index(typeid(void))));
-        assert(("Type should match!", type_id == std::type_index(typeid(T))));
+        assert(type_id != std::type_index(typeid(void)));
+        assert(type_id == std::type_index(typeid(T)));
 
         // Ensure size is sufficient
         size_t next_index = size();
         buffer.resize( next_index + 1 );
 
         // Use placement-new to construct a T in allocated memory
-        auto instance = new (buffer.data() + next_index) T(args...);
+        T* instance = new (buffer.data() + next_index) T(args...);
 
         return instance;
     }
@@ -107,7 +107,7 @@ struct agnostic_vector
     template<typename T>
     void init_for(
             std::function<void*(void*)>&& _default_constructor = [](void* ptr) {
-                new (ptr) T();
+                return new (ptr) T();
             },
             std::function<void(void*)>&& _destructor = [](void* ptr) {
                 auto* instance = (T*)(ptr);
@@ -116,7 +116,7 @@ struct agnostic_vector
     {
         static_assert(sizeof(T) == ELEMENT_SIZE_IN_BYTES, "T has not the right size");
         // Store the type index, to ensure it is the same when doing a placement-new (cf: emplace_back)
-        assert( ("cannot call initialize_for more than once!", type_id == std::type_index(typeid(void))));
+        assert(type_id == std::type_index(typeid(void)));
         type_id = std::type_index(typeid(T));
         default_constructor = _default_constructor;
         destructor          = _destructor;
