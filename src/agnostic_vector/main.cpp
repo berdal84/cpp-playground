@@ -1,16 +1,18 @@
 #include "test_macros.h"
 #include "AgnosticVector.h"
 #include "NumberComponent.h"
+#include "ComponentManager.h"
 
 int main() {
     constexpr auto element_size = sizeof(SimpleComponent);
 
     TEST("instance_count is zero", SimpleComponent::instance_count() == 0);
     {
-        // Construct a vector (no template required, but vector cannot be used until we call init_for<T>() )
-        AgnosticVector vec;
+        // Construct a vector
+        // - no template required (ComponentManager ignores Component & SimpleComponent)
+        AgnosticVector vec = ComponentManager::create_agnostic_vector();
 
-        // Initialize for a given type
+        // Initialize for a given type (SimpleComponent)
         //
         // It will:
         // - create default constructor and destructor lambdas
