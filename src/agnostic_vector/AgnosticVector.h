@@ -41,7 +41,7 @@ struct AgnosticVector
         {
             if (chunk_in_use[index] )
             {
-                destructor(data_at(index));
+                destructor(at(index));
             }
         }
         buffer.clear();
@@ -70,7 +70,7 @@ struct AgnosticVector
         chunk_in_use.resize(new_size);
         for(size_t index = old_size; index < new_size; ++index)
         {
-            default_constructor(data_at(index));
+            default_constructor(at(index));
             chunk_in_use[index] = true;
         }
     }
@@ -88,17 +88,17 @@ struct AgnosticVector
 
         if (chunk_in_use[next_index])
         {
-            destructor(data_at(next_index));
+            destructor(at(next_index));
         }
 
         // Use placement-new to construct a T in allocated memory
-        T* instance = new (data_at(next_index) ) T(args...);
+        T* instance = new (at(next_index) ) T(args...);
         chunk_in_use[next_index] = true;
 
         return instance;
     }
 
-    void* data_at(size_t index )
+    void* at(size_t index )
     { return buffer.data() + (index * elem_size_in_byte); }
 
     // Construct a new element at the end of the vector, resize when necessary.
@@ -109,9 +109,9 @@ struct AgnosticVector
         resize( next_index + 1 );
         if (chunk_in_use[next_index])
         {
-            destructor(data_at(next_index));
+            destructor(at(next_index));
         }
-        auto ptr = default_constructor(data_at(next_index) );
+        auto ptr = default_constructor(at(next_index) );
         chunk_in_use[next_index] = true;
         return ptr;
     }
@@ -119,7 +119,7 @@ struct AgnosticVector
     // Erase an element at a given index
     void erase_at(size_t index)
     {
-        void* ptr = data_at(index);
+        void* ptr = at(index);
         destructor(ptr);
         auto begin = buffer.begin();
         std::advance(begin, index);
@@ -160,6 +160,6 @@ struct AgnosticVector
     T* at(size_t index)
     {
         assert(sizeof(T) == elem_size_in_byte);
-        return (T*)data_at(index);
+        return (T*)at(index);
     }
 };

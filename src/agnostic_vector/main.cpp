@@ -37,6 +37,9 @@ int main() {
 
         printf("\nvec.at<SimpleComponent>() ...\n\n");
         auto component2 = vec.at<SimpleComponent>(1);
+        // previous line is equivalent to:
+        // auto component2 = (SimpleComponent*)vec.at(1)
+
         TEST("component2's value", component2->value() == 2023);
         TEST("size", vec.size() == 2);
 
